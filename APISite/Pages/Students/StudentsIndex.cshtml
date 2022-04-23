@@ -1,0 +1,111 @@
+﻿@page
+@model APISite.Pages.Students.StudentsIndexModel
+@{
+	ViewData["Title"] = "Our Students";
+}
+<div class="container">
+<div class="row">
+	<div class="col">
+		<h6>Update credentials</h6>
+		Email: <input type="text" id="update-student" value="" class="form-control"/>
+		<button class="btn btn-warning" id="student-numberPut" onclick="fillStudentValues()">Search</button>
+
+		<form id="update-studentForm">
+			<div class="form-group">
+				Email: <input type="text" name="update-email" value="" class="form-control"/>
+			</div>
+			<div class="form-group">
+				Firstname: <input type="text" name="update-firstname" value="" class="form-control"/>
+			</div>
+			<div class="form-group">
+				Lastname: <input type="text" name="update-lastname" value="" class="form-control"/>
+			</div>
+			<div class="form-group">
+				Phone: <input type="text" name="update-phone" value="" class="form-control"/>
+			</div>
+			<div class="form-group">
+				Address: <input type="text" name="update-address" value="" class="form-control"/>
+			</div>
+			<button class="btn btn-dark" id="put-its" onclick="updateStudent()" type="submit">Update</button>
+		</form>
+		
+	</div>
+	
+	
+	<div class="col">
+		<h6>Show wishlist</h6>
+		<form>
+			<div class="form-group">
+				<label class="form-label">Email:</label>
+				<input type="text" id="student-email" class="form-control" value=""/>
+			</div>
+		</form>
+		<div class="col-auto">
+			<button class="btn btn-success" id="find-courses" onclick="findStudentCourses()">Search</button>
+		</div>
+		
+		<div class="card-group" id="student-courses">
+
+		</div>
+
+	</div>
+</div>
+</div>
+@section Scripts
+{
+	<script>
+		function fillStudentValues() {
+	let found = document.getElementById("update-student").value;
+	fetch(`/students/${found}`)
+		.then(res => res.json())
+		.then(student => {
+			document.getElementsByName("update-email")[0].value = student.email;
+			document.getElementsByName("update-firstname")[0].value = student.firstName;
+			document.getElementsByName("update-lastname")[0].value = student.lastName;
+			document.getElementsByName("update-phone")[0].value = student.phone;
+			document.getElementsByName("update-address")[0].value = student.address;
+		});
+}
+function updateStudent() {
+	const emailId = document.getElementById("update-student").value;
+	const updatedStudentForm = document.getElementById("update-studentForm").elements;
+	const studentValues = {
+		email: updatedStudentForm.namedItem("update-email").value,
+		firstName: updatedStudentForm.namedItem("update-firstname").value,
+		lastName: updatedStudentForm.namedItem("update-lastname").value,
+		phone: updatedStudentForm.namedItem("update-phone").value,
+		address: updatedStudentForm.namedItem("update-address").value
+	}
+	//Edit
+	fetch(`/students/${emailId}`,
+		{
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(studentValues)
+		});
+	alert('Updated!');
+	
+}
+		function findStudentCourses(){
+			document.getElementById("student-courses").innerHTML = '';
+			let display = document.getElementById("student-email").value;
+			fetch(`/${display}/studentCourses`)
+				.then(res => res.json())
+				.then(course => {
+					for (let i = 0; i < course.length; i++) {
+						let list = `<div class="card">
+						    <div class="card-body">
+						      <h5 class="card-title">${course[i].title}</h5>
+						      <p class="card-text">${course[i].description}</p>
+						      <p class="card-text">${course[i].length}</p>
+						      <p class="card-text"><small class="text-muted">${course[i].status}</small></p>
+						    </div>
+						  </div>`;
+						document.getElementById("student-courses").innerHTML += list;
+					}
+				});
+		}
+	</script>
+}

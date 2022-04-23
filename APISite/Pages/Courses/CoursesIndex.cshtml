@@ -1,0 +1,85 @@
+﻿@page
+@model APISite.Pages.Courses.CoursesIndexModel
+@{
+	ViewData["Title"] = "Our Courses";
+}
+<div class="container">
+	<div class="row">
+		<div class="col-3">
+
+			<p>Enter your email if you want to save to your wishlist</p>
+			<input type="text" id="email-validation" value="" class="form-control"/>
+			<button class="btn btn-success" id="get-courses" onclick="showAll()">Show courses</button>
+
+			<h6>Search course by id</h6>
+			Course id: <input type="text" id="search-id" value="" class="form-control"/>
+			<button class="btn btn-info" id="search-course" onclick="findOneCourse()">Search</button>
+			<div id="one-course">
+				<!--One Course displays here-->
+			</div>
+			<p id="theOne"></p>
+		</div>
+		<div class="col-8">
+				<div class="row row-cols-1 row-cols-md-4 g-4" id="show-cards">
+					<!--Courses displays here-->
+				</div>
+			</div>
+	 </div>
+</div>
+
+
+
+
+
+@section Scripts
+{
+	<script>
+function showAll() {
+	document.getElementById("show-cards").innerHTML = "";
+fetch("/courses")
+	.then(res => res.json())
+	.then(courses => {
+		for (let i = 0; i < courses.length; i++) {
+			let display = `<div class=" card-group col">
+		<div class="card" style="width:15rem;">
+		<div class="card-body">
+        <h5 class="card-title">${courses[i].title}</h5>
+        <small class="card-text">Beskrivning: ${courses[i].description}</small>
+		<p><small class="text-muted">Status: ${courses[i].status}</small></p>
+		<p>Id: ${courses[i].id}</p>
+		</div>
+		<button class="btn btn-secondary" onclick="addCourseToStudent(${courses[i].id})" >Add to wishlist</button>
+	   </div>
+	  </div>`;
+			document.getElementById("show-cards").innerHTML += display;
+		}
+	});
+}
+function findOneCourse() {
+	let found = document.getElementById("search-id").value;
+	document.getElementById("one-course").innerHTML = "";
+	fetch(`/courses/${found}`)
+		.then(res => res.json())
+		.then(course => {
+			document.getElementById("one-course").innerHTML =`<div class="card"style="width: 16rem;"><div class="card-body">
+        <h5 class="card-title">${course.title}</h5>
+        <small class="card-text">Beskrivning: ${course.description}</small>
+        <p>Kursnumer: ${course.id}</p>
+		<p>Kursstatus: ${course.status}</p>
+		</div>
+		<button class="btn btn-secondary" onclick="addCourseToStudent(${course.id})">Lägg till i önskelista</button>
+		</div>`;
+			
+		});
+}
+function addCourseToStudent(course) {
+	let validate = document.getElementById('email-validation').value;
+	const params = new URLSearchParams({ id: course });
+	fetch(`/studentCourses/${validate}?` + params,
+			{
+				method: 'PUT'
+			})
+		.then(response => response.text());
+}
+	</script>
+}

@@ -1,0 +1,65 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Welcome";
+}
+
+<div class="text-center">
+<h1 class="display-4">Welcome to Westcoast Education</h1>
+</div>
+<h6>Sign up new student</h6>
+<div class="row">
+	<div class="col-md-4">
+		<form id="student-form" action="/students" method="POST">
+			<div class="form-group">
+				Email: <input type="text" name="email" id="email" value="" class="form-control"/>
+			</div>
+			<div class="form-group">
+				Firstname: <input type="text" name="firstname" id="first" value="" class="form-control"/>
+			</div>
+			<div class="form-group">
+				Lastname: <input type="text" name="lastname" id="last" value="" class="form-control"/>
+			</div>
+			<div class="form-group">
+				Phone: <input type="text" name="phone" value="" id="tel" class="form-control"/>
+			</div>
+			<div class="form-group">
+				Address: <input type="text" name="address" value="" id="adress" class="form-control"/>
+			</div>
+			
+		</form>
+		<button class="btn btn-primary" id="post-student" onclick="createStudent()">Add student</button>
+	</div>
+</div>
+@section Scripts {
+	
+	<script>
+		const postData = (url = '', data = {}) => {
+			fetch(url,
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(data)
+				});
+		}
+		function createStudent() {
+			const form = document.getElementById("student-form").elements;
+			const user = {
+				email: form.namedItem("email").value,
+				firstname: form.namedItem("firstname").value,
+				lastname: form.namedItem("lastname").value,
+				phone: form.namedItem("phone").value,
+				address: form.namedItem("address").value
+			};
+			alert('Request processed');
+			postData("/students", user);
+			document.getElementById("email").value = '';
+			document.getElementById("first").value = '';
+			document.getElementById("last").value = '';
+			document.getElementById("tel").value = '';
+			document.getElementById("adress").value = '';
+		}
+	</script>
+}

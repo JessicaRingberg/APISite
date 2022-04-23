@@ -1,0 +1,218 @@
+﻿@page
+@model APISite.Pages.Admin.AdminModel
+@{
+}
+<div class="container">
+	<div class="row">
+
+		<button class="btn btn-success" id="get-users" onclick="showStudents()">Show students</button>
+		<table class="table table-striped">
+			<thead>
+			<tr>
+				<th scope="col">Email</th>
+				<th scope="col">Firstname</th>
+				<th scope="col">Lastname</th>
+				<th scope="col">Phone</th>
+				<th scope="col">Address</th>
+				<th scope="col"></th>
+			</tr>
+			</thead>
+			<tbody id="user-table">
+			</tbody>
+		</table>
+
+
+		<button class="btn btn-success" id="get-courses" onclick="showCourses()">Show courses</button>
+		<table class="table table-striped">
+			<thead>
+			<tr>
+				<th scope="col">Id</th>
+				<th scope="col">Title</th>
+				<th scope="col">Description</th>
+				<th scope="col">Length</th>
+				<th scope="col">Difficulty</th>
+				<th scope="col">Status</th>
+				<th scope="col"></th>
+			</tr>
+			</thead>
+			<tbody id="course-table">
+			</tbody>
+		</table>
+
+	</div>
+	
+	<div class="row align-items-start">
+		<div class="col">
+			<h6>Search student</h6>
+			Email: <input type="text" id="search-email" value="" class="form-control"/>
+			<button class="btn btn-info" id="search-student" onclick="findOne()">Search</button>
+			<ul class="list-group list-group-flush" id="oneStudent">
+
+			</ul>
+		</div>
+		<div class="col">
+			<h4>Create new course</h4>
+			<form id="course-form" action="/courses" method="POST">
+				<div class="form-group">
+					Title: <input type="text" name="title" value="" class="form-control"/>
+				</div>
+				<div class="form-group">
+					Description: <input type="text" name="description" value="" class="form-control"/>
+				</div>
+				<div class="form-group">
+					Length: <input type="text" name="length" value="" class="form-control"/>
+				</div>
+				<div class="form-group">
+					Difficulty: <input type="text" name="difficulty" value="" class="form-control"/>
+				</div>
+				<div class="form-group">
+					Active: <input type="radio" name="status" value="Active"/>
+					Inactive: <input type="radio" name="status" value="Inactive"/>
+				</div>
+			</form>
+			<button class="btn btn-primary" id="post-course" onclick="createCourse()">Add course</button>
+		</div>
+	</div>
+	
+</div>
+
+
+<div class="col-md-4">
+	<h6>Update course</h6>
+	Course id <input type="text" id="update-id" value="" class="form-control"/>
+	<button class="btn btn-warning" id="course-numberPut" onclick="fillCourseValues()">Search course to update</button>
+	<form id="update-form">
+		<div class="form-group">
+			Title: <input type="text" name="update-title" value="" class="form-control"/>
+		</div>
+		<div class="form-group">
+			Description: <input type="text" name="update-description" value="" class="form-control"/>
+		</div>
+		<div class="form-group">
+			Length: <input type="text" name="update-length" value="" class="form-control"/>
+		</div>
+		<div class="form-group">
+			Difficulty: <input type="text" name="update-difficulty" value="" class="form-control"/>
+		</div>
+		<div class="form-group">
+			Active:  <input type="radio" name="update-status" value="Active"/>
+			Inactive:<input type="radio" name="update-status" value="Inactive"/>
+		</div>
+			
+	</form>
+	<button class="btn btn-dark" id="put-it" onclick="updateCourse()">Update</button>
+</div>
+@section Scripts
+{
+	<script>
+		//Students
+		function showStudents() {
+			document.getElementById("user-table").innerHTML = "";
+			fetch("/students")
+				.then(response => response.json())
+				.then(data => {
+					for (let i = 0; i < data.length; i++) {
+						let display = `<tr> <td>${data[i].email}</td>
+				<td>${data[i].firstName}</td> <td>${data[i].lastName}</td>
+				<td>${data[i].phone}</td> <td>${data[i].address}</td>
+				<td><button class="btn btn-danger" onclick="removeStudent('${data[i].email}')" >Remove</button></td>
+				</tr>`;
+						document.getElementById("user-table").innerHTML += display;
+					}
+				});
+		}
+		function findOne() {
+			let found = document.getElementById("search-email").value;
+			fetch(`/students/${found}`)
+				.then(res => res.json())
+				.then(student => {
+					document.getElementById("oneStudent").innerHTML =
+						`Found: <li class="list-group-item">${student.firstName} ${student.lastName}</li>
+    <li class="list-group-item">${student.email}</li>
+    <li class="list-group-item">${student.phone}</li>
+	<li class="list-group-item">${student.address}</li>`;
+				});
+			document.getElementById("search-email").value = "";
+		}
+		function removeStudent(email) {
+			fetch(`/students/${email}`, { method: 'DELETE' })
+				.then(res => res.json());
+			showStudents();
+		}
+		//Courses
+		function showCourses() {
+			document.getElementById("course-table").innerHTML = "";
+			fetch("/courses")
+				.then(response => response.json())
+				.then(data => {
+					for (let i = 0; i < data.length; i++) {
+						let display = `<tr> <th scope="row">${data[i].id}</th>
+						<td>${data[i].title}</td>
+				<td>${data[i].description}</td><td>${data[i].length}</td>
+				<td>${data[i].difficulty}</td> <td>${data[i].status}</td>
+				<td><button class="btn btn-danger" onclick="removeCourse('${data[i].id}')" >Remove</button></td>
+				</tr>`;
+						document.getElementById("course-table").innerHTML += display;
+					}
+				});
+		}
+		function removeCourse(id) {
+			fetch(`/courses/${id}`, { method: 'DELETE' })
+				.then(getResponse)
+				.then(processJSON);
+			showCourses();
+		}
+		function createCourse() {
+			const form = document.getElementById("course-form").elements;
+			const course = {
+				title: form.namedItem("title").value,
+				description: form.namedItem("description").value,
+				length: form.namedItem("length").value,
+				difficulty: form.namedItem("difficulty").value,
+				status: form.namedItem("status").value
+			};
+			postData("/courses", course);
+		}
+		const postData = (url = '', data = {}) => {
+			fetch(url,
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(data)
+				});
+		}
+		function updateCourse() {
+			const putId = document.getElementById("update-id").value;
+			const updatedForm = document.getElementById("update-form").elements;
+			const putted = {
+				title: updatedForm.namedItem("update-title").value,
+				description: updatedForm.namedItem("update-description").value,
+				length: updatedForm.namedItem("update-length").value,
+				difficulty: updatedForm.namedItem("update-difficulty").value,
+				status: updatedForm.namedItem("update-status").value
+			}
+			//Edit
+			fetch(`/courses/${putId}`,
+				{
+					method: 'PUT',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(putted)
+				});
+		}
+		function fillCourseValues() {
+			let found = document.getElementById("update-id").value;
+			fetch(`/courses/${found}`)
+				.then(res => res.json())
+				.then(course => {
+					document.getElementsByName("update-title")[0].value = course.title;
+					document.getElementsByName("update-description")[0].value = course.description;
+					document.getElementsByName("update-length")[0].value = course.length;
+					document.getElementsByName("update-difficulty")[0].value = course.difficulty;
+				});
+		}
+	</script>
+}
