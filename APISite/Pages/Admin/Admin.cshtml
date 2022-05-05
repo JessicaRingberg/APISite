@@ -40,6 +40,29 @@
 		</table>
 
 	</div>
+	<div class="col-md-4">
+		<h6>Update course</h6>
+		<form id="update-form">
+			<div class="form-group">
+				Title: <input type="text" name="update-title" value="" class="form-control"/>
+			</div>
+			<div class="form-group">
+				Description: <input type="text" name="update-description" value="" class="form-control"/>
+			</div>
+			<div class="form-group">
+				Length: <input type="text" name="update-length" value="" class="form-control"/>
+			</div>
+			<div class="form-group">
+				Difficulty: <input type="text" name="update-difficulty" value="" class="form-control"/>
+			</div>
+			<div class="form-group">
+				Active:  <input type="radio" name="update-status" value="Active"/>
+				Inactive:<input type="radio" name="update-status" value="Inactive"/>
+			</div>
+			
+		</form>
+		<button class="btn btn-dark" id="put-it" onclick="updateCourse()">Update</button>
+	</div>
 	
 	<div class="row align-items-start">
 		<div class="col">
@@ -77,31 +100,7 @@
 </div>
 
 
-<div class="col-md-4">
-	<h6>Update course</h6>
-	Course id <input type="text" id="update-id" value="" class="form-control"/>
-	<button class="btn btn-warning" id="course-numberPut" onclick="fillCourseValues()">Search course to update</button>
-	<form id="update-form">
-		<div class="form-group">
-			Title: <input type="text" name="update-title" value="" class="form-control"/>
-		</div>
-		<div class="form-group">
-			Description: <input type="text" name="update-description" value="" class="form-control"/>
-		</div>
-		<div class="form-group">
-			Length: <input type="text" name="update-length" value="" class="form-control"/>
-		</div>
-		<div class="form-group">
-			Difficulty: <input type="text" name="update-difficulty" value="" class="form-control"/>
-		</div>
-		<div class="form-group">
-			Active:  <input type="radio" name="update-status" value="Active"/>
-			Inactive:<input type="radio" name="update-status" value="Inactive"/>
-		</div>
-			
-	</form>
-	<button class="btn btn-dark" id="put-it" onclick="updateCourse()">Update</button>
-</div>
+
 @section Scripts
 {
 	<script>
@@ -121,6 +120,7 @@
 					}
 				});
 		}
+
 		function findOne() {
 			let found = document.getElementById("search-email").value;
 			fetch(`/students/${found}`)
@@ -134,14 +134,16 @@
 				});
 			document.getElementById("search-email").value = "";
 		}
+
 		function removeStudent(email) {
 			fetch(`/students/${email}`, { method: 'DELETE' })
 				.then(res => res.json());
 			showStudents();
 		}
+
 		//Courses
 		function showCourses() {
-			document.getElementById("course-table").innerHTML = "";
+			document.getElementById("course-table").innerHTML = '';
 			fetch("/courses")
 				.then(response => response.json())
 				.then(data => {
@@ -150,18 +152,21 @@
 						<td>${data[i].title}</td>
 				<td>${data[i].description}</td><td>${data[i].length}</td>
 				<td>${data[i].difficulty}</td> <td>${data[i].status}</td>
+				<td><button class="btn btn-warning" onclick="updateCoursen('${data[i].id}')">Update</button></td>
 				<td><button class="btn btn-danger" onclick="removeCourse('${data[i].id}')" >Remove</button></td>
 				</tr>`;
 						document.getElementById("course-table").innerHTML += display;
 					}
 				});
 		}
+
 		function removeCourse(id) {
 			fetch(`/courses/${id}`, { method: 'DELETE' })
 				.then(getResponse)
 				.then(processJSON);
 			showCourses();
 		}
+
 		function createCourse() {
 			const form = document.getElementById("course-form").elements;
 			const course = {
@@ -173,6 +178,7 @@
 			};
 			postData("/courses", course);
 		}
+
 		const postData = (url = '', data = {}) => {
 			fetch(url,
 				{
@@ -183,6 +189,19 @@
 					body: JSON.stringify(data)
 				});
 		}
+		//working on nicer update method for frontend
+		function updateCoursen(found) {
+			fetch(`/courses/${found}`)
+				.then(res => res.json())
+				.then(course => {
+					document.getElementById().value
+					document.getElementsByName("update-title")[0].value = course.title;
+					document.getElementsByName("update-description")[0].value = course.description;
+					document.getElementsByName("update-length")[0].value = course.length;
+					document.getElementsByName("update-difficulty")[0].value = course.difficulty;
+				});
+		}
+
 		function updateCourse() {
 			const putId = document.getElementById("update-id").value;
 			const updatedForm = document.getElementById("update-form").elements;
@@ -203,16 +222,6 @@
 					body: JSON.stringify(putted)
 				});
 		}
-		function fillCourseValues() {
-			let found = document.getElementById("update-id").value;
-			fetch(`/courses/${found}`)
-				.then(res => res.json())
-				.then(course => {
-					document.getElementsByName("update-title")[0].value = course.title;
-					document.getElementsByName("update-description")[0].value = course.description;
-					document.getElementsByName("update-length")[0].value = course.length;
-					document.getElementsByName("update-difficulty")[0].value = course.difficulty;
-				});
-		}
+
 	</script>
 }
