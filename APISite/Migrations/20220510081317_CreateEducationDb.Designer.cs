@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APISite.Migrations
 {
     [DbContext(typeof(EducationContext))]
-    [Migration("20220423190018_CreateSchool")]
-    partial class CreateSchool
+    [Migration("20220510081317_CreateEducationDb")]
+    partial class CreateEducationDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -36,6 +36,10 @@ namespace APISite.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Difficulty")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Image")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

@@ -4,7 +4,7 @@
 
 namespace APISite.Migrations
 {
-    public partial class CreateSchool : Migration
+    public partial class CreateEducationDb : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -15,6 +15,7 @@ namespace APISite.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Image = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Length = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Difficulty = table.Column<string>(type: "nvarchar(max)", nullable: false),

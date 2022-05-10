@@ -37,6 +37,10 @@ namespace APISite.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Length")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
