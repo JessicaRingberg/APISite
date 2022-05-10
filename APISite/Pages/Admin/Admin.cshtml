@@ -89,6 +89,9 @@
 					Difficulty: <input type="text" name="difficulty" value="" class="form-control"/>
 				</div>
 				<div class="form-group">
+					Image: <input type="text" name="image" value="" class="form-control"/>
+				</div>
+				<div class="form-group">
 					Active: <input type="radio" name="status" value="Active"/>
 					Inactive: <input type="radio" name="status" value="Inactive"/>
 				</div>
@@ -174,6 +177,7 @@
 				description: form.namedItem("description").value,
 				length: form.namedItem("length").value,
 				difficulty: form.namedItem("difficulty").value,
+				image: form.namedItem("image").value,
 				status: form.namedItem("status").value
 			};
 			postData("/courses", course);
