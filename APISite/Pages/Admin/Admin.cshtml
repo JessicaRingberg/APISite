@@ -96,7 +96,7 @@
 					Inactive: <input type="radio" name="status" value="Inactive"/>
 				</div>
 			</form>
-			<button class="btn btn-primary" id="post-course" onclick="createCourse()">Add course</button>
+			<button type="submit" class="btn btn-primary" id="post-course" onclick="createCourse()">Add course</button>
 		</div>
 	</div>
 	
@@ -181,6 +181,7 @@
 				status: form.namedItem("status").value
 			};
 			postData("/courses", course);
+
 		}
 
 		const postData = (url = '', data = {}) => {
@@ -193,6 +194,7 @@
 					body: JSON.stringify(data)
 				});
 		}
+
 		//working on nicer update method for frontend
 		function updateCoursen(found) {
 			fetch(`/courses/${found}`)
